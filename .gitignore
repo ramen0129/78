@@ -1,0 +1,35 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python (used for local development server)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE and Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node.js (in case build tools are added later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Gemini Agent local files (if any)
+.gemini/
+.agent/

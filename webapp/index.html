@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翔太の成長物語 Ultimate - Sound Novel</title>
+    <link rel="stylesheet" href="style.css?v=3">
+    <!-- Google Fonts: Shippori Mincho -->
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Menu Screen -->
+        <div id="menu-screen">
+            <h1>翔太の成長物語</h1>
+            <div class="chapter-list" style="overflow-y: auto; max-height: 40vh; padding-right: 10px;">
+                <button class="chapter-btn" data-target="prologue">序章：分母ゼロの檻</button>
+                <button class="chapter-btn locked" data-target="chapter1">第1章：水の巻 ～器に従う心と観の目～</button>
+                <button class="chapter-btn locked" data-target="chapter2">第2章：地の巻 ～WhoとWhatを断つ剣～</button>
+                <button class="chapter-btn locked" data-target="chapter3">第3章：火の巻 ～言い訳を斬る一拍子～</button>
+                <button class="chapter-btn locked" data-target="chapter4">第4章：風の巻 ～他流を知り、己の殻を破る～</button>
+                <button class="chapter-btn locked" data-target="chapter5">第5章：水の巻・真 ～方円の器に従うリーダーシップ～</button>
+                <button class="chapter-btn locked" data-target="chapter5_5">第5.5章：幕間 ～佐藤先生との対話と再定義～</button>
+                <button class="chapter-btn locked" data-target="chapter6">第6章：空之巻への階 ～俯瞰の目とこだわりの統合～</button>
+                <button class="chapter-btn locked" data-target="chapter7">第7章：空之巻 ～形なき理と、自立の剣～</button>
+                <button class="chapter-btn locked" data-target="epilogue">終章：新たな戦場 ～高校受験と剣の理～</button>
+            </div>
+            <div id="memory-reset" onclick="resetProgress()">進行度リセット</div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" style="display: none;">
+            <div id="bg-layer"></div>
+            <div id="effect-layer"></div>
+            <div id="ui-layer">
+                <div id="interaction-area"></div>
+                <div id="dialogue-panel" class="glass-panel">
+                    <div id="speaker-name"></div>
+                    <div id="text-box"></div>
+                    <div id="click-indicator">▼</div>
+                </div>
+                <!-- Menu return button -->
+                <div id="return-menu-btn">メニューへ戻る</div>
+                <div id="log-btn">ログ（履歴）</div>
+                <div id="auto-btn">Autoプレイ</div>
+            </div>
+        </div>
+        
+        <!-- Backlog Screen -->
+        <div id="backlog-screen" class="glass-panel" style="display: none;">
+            <div id="backlog-content"></div>
+            <div id="backlog-close-btn">閉じる</div>
+        </div>
+        
+        <!-- Tooltip View -->
+        <div id="tooltip-container" class="glass-panel"></div>
+    </div>
+    
+    <script src="scenario.js?v=3"></script>
+    <script src="engine.js?v=3"></script>
+</body>
+</html>

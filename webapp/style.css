@@ -1,0 +1,187 @@
+:root {
+    --bg-color: #0f1012;
+    --text-color: #f1f1f1;
+    --glass-bg: rgba(20, 20, 25, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --accent-red: #ff3b3b;
+    --accent-blue: #33ccff;
+    --primary-font: 'Shippori Mincho', serif;
+}
+
+body {
+    margin: 0; overflow: hidden; background-color: var(--bg-color); color: var(--text-color);
+    font-family: var(--primary-font); display: flex; justify-content: center; align-items: center;
+    height: 100vh; user-select: none;
+}
+
+#game-container {
+    position: relative; width: 100%; max-width: 960px; height: 100%; max-height: 540px;
+    background: #111; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9);
+}
+
+/* Menu Screen */
+#menu-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1217 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+#menu-screen h1 {
+    font-size: 3rem; letter-spacing: 5px; margin-bottom: 50px; color: #e0e0e0;
+    text-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+.chapter-list { display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 500px; }
+.chapter-btn {
+    background: var(--glass-bg); color: #fff; border: 1px solid var(--glass-border);
+    padding: 15px 20px; font-size: 1.2rem; font-family: var(--primary-font);
+    cursor: pointer; transition: all 0.3s ease; border-radius: 8px; text-align: center;
+}
+.chapter-btn:hover:not(.locked) {
+    background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 0 15px rgba(255,255,255,0.2); transform: translateX(5px);
+}
+.chapter-btn.locked {
+    opacity: 0.3; cursor: not-allowed; text-decoration: line-through; border-color: transparent;
+}
+#memory-reset {
+    margin-top: 50px; font-size: 0.9rem; color: #666; cursor: pointer; text-decoration: underline;
+}
+
+/* Game Screen Elements */
+#game-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+#bg-layer {
+    position: absolute; top: -5%; left: -5%; width: 110%; height: 110%;
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1217 100%);
+    background-size: cover; background-position: center;
+    transition: filter 0.8s ease-in-out, opacity 0.8s ease; z-index: 1;
+}
+
+body.state-monochrome #bg-layer {
+    filter: grayscale(100%) brightness(0.5) contrast(1.5);
+}
+
+#effect-layer {
+    pointer-events: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 15; overflow: hidden;
+}
+
+.floating-text {
+    position: absolute; color: #ff3333; font-weight: 900; filter: blur(0px);
+    text-shadow: 0 0 10px #000000, 0 0 20px #ff0000; z-index: 100;
+    pointer-events: none;
+    animation: floatUp 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(110vh) scale(0.6); opacity: 0; }
+    30% { opacity: 0.9; }
+    70% { opacity: 0.9; }
+    100% { transform: translateY(-30vh) scale(1.5); opacity: 0; filter: blur(6px); }
+}
+
+#ui-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none;
+}
+
+#interaction-area { flex-grow: 1; cursor: pointer; pointer-events: auto; }
+
+#dialogue-panel {
+    margin: 0 20px 20px 20px; height: 35%; padding: 25px 30px; box-sizing: border-box;
+    display: flex; flex-direction: column; position: relative; cursor: pointer; pointer-events: auto;
+}
+
+.glass-panel {
+    background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+#speaker-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 12px; color: #e0e0e0; letter-spacing: 2px; min-height: 1.5rem; }
+#speaker-name.武蔵 { color: var(--accent-red); text-shadow: 0 0 10px rgba(255, 59, 59, 0.8); }
+#speaker-name.高橋先輩 { color: #88ccff; }
+
+#text-box { font-size: 1.4rem; line-height: 1.8; letter-spacing: 1px; flex-grow: 1; }
+
+.highlight-red { color: var(--accent-red); text-shadow: 0 0 15px var(--accent-red); font-weight: bold; }
+.highlight-blue { color: var(--accent-blue); text-shadow: 0 0 15px var(--accent-blue); font-weight: bold; }
+
+/* Menus & Tooltips */
+#return-menu-btn {
+    position: absolute; top: 15px; right: 20px; color: #bbb; border: 1px solid #555; background: rgba(0,0,0,0.5);
+    padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; z-index: 20; pointer-events: auto;
+}
+#return-menu-btn:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: #fff; }
+
+#log-btn {
+    position: absolute; top: 15px; right: 150px; color: #bbb; border: 1px solid #555; background: rgba(0,0,0,0.5);
+    padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; z-index: 20; pointer-events: auto;
+}
+#log-btn:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: #fff; }
+
+#auto-btn {
+    position: absolute; top: 15px; right: 280px; color: #bbb; border: 1px solid #555; background: rgba(0,0,0,0.5);
+    padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; z-index: 20; pointer-events: auto;
+}
+#auto-btn:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: #fff; }
+#auto-btn.active { background: rgba(255, 204, 0, 0.3); color: #ffeb99; border-color: #ffcc00; }
+
+/* Backlog Screen */
+#backlog-screen {
+    position: absolute; top: 10%; left: 5%; width: 90%; height: 80%; z-index: 300; display: flex; flex-direction: column; overflow: hidden; padding: 20px; box-sizing: border-box; background: rgba(10, 10, 15, 0.95);
+}
+#backlog-content {
+    flex-grow: 1; overflow-y: auto; padding-right: 15px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; font-size: 1.1rem;
+}
+.backlog-item {
+    padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; border-left: 3px solid transparent;
+}
+.backlog-item:hover { background: rgba(255,255,255,0.12); border-left: 3px solid var(--accent-blue); }
+.backlog-speaker { font-weight: bold; color: #88ccff; margin-bottom: 5px; font-size: 1.1em; }
+.backlog-speaker.武蔵 { color: var(--accent-red); }
+#backlog-close-btn {
+    align-self: center; padding: 10px 30px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); transition: all 0.2s; color: #fff; text-align: center;
+}
+#backlog-close-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* Effects */
+.effect-shake {
+    animation: shakeAnim 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes shakeAnim {
+    10%, 90% { transform: translate3d(-5px, 0, 0); }
+    20%, 80% { transform: translate3d(5px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-10px, 0, 0); }
+    40%, 60% { transform: translate3d(10px, 0, 0); }
+}
+
+.effect-flash {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50;
+    pointer-events: none; background-color: #ffffff;
+    animation: flashAnim 0.6s ease-out forwards;
+}
+@keyframes flashAnim {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.tooltip-word {
+    border-bottom: 2px dashed #ffcc00; color: #ffeb99; cursor: help; transition: all 0.2s; position: relative; z-index: 20;
+}
+.tooltip-word:hover { color: #fff; background: rgba(255, 204, 0, 0.2); }
+
+#tooltip-container {
+    position: absolute; z-index: 200; width: 320px; padding: 20px; font-size: 1rem; color: #e0e0e0;
+    line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+    background: rgba(15,15,20,0.9); border: 1px solid #ffcc00; box-shadow: 0 0 20px rgba(255,204,0,0.2);
+}
+#tooltip-container.show { opacity: 1; pointer-events: auto; }
+
+#click-indicator {
+    position: absolute; bottom: 20px; right: 25px; font-size: 1.5rem; color: rgba(255, 255, 255, 0.8);
+    animation: blink 1.2s infinite ease-in-out; display: none;
+}
+@keyframes blink { 0% { opacity: 1; transform: translateY(0); } 50% { opacity: 0.2; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 600px) {
+    #menu-screen h1 { font-size: 1.8rem; }
+    #text-box { font-size: 1.1rem; line-height: 1.6; }
+    #dialogue-panel { height: 40%; margin: 10px; padding: 15px 20px; }
+}
