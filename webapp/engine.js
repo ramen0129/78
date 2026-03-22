@@ -235,6 +235,8 @@ function parseMarkdownToScenario(text) {
         let speaker = "語り手"; // Default speaker
         let isDialogue = false;
         let dialogueText = line;
+        let command = "";
+        let args = "";
         
         const knownSpeakers = ["翔太", "高橋先輩", "武蔵", "健太", "陸", "佐藤先生", ""];
         
