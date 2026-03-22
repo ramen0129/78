@@ -206,7 +206,16 @@ function parseMarkdownToScenario(text) {
 
     lines.forEach(line => {
         line = line.trim();
-        if(!line || line.startsWith('---') || line.startsWith('## ') || line.startsWith('# ') || line === '＜完＞' || line === '＜本当の完＞') return;
+        if(!line || line.startsWith('# ') || line === '＜完＞' || line === '＜本当の完＞') return;
+
+        if (line.startsWith('---')) {
+            out.push({ command: "scene_break" });
+            return;
+        }
+        if (line.startsWith('## ')) {
+            out.push({ command: "title_card", args: line.substring(3).trim() });
+            return;
+        }
 
         let speaker = "";
         let command = "";
@@ -235,6 +244,13 @@ function parseMarkdownToScenario(text) {
             if (index < chunks.length - 1 || line.endsWith('。')) {
                 textChunk += '。';
             }
+            
+            // Apply Markdown formatting
+            textChunk = textChunk.replace(/\*\*(.*?)\*\*/g, '<span class="markdown-bold">$1</span>');
+            if (index === 0 && textChunk.startsWith('* ')) {
+                textChunk = '<span class="markdown-bullet">・</span>' + textChunk.substring(2);
+            }
+
             // Apply tips safely per sentence chunk
             for (const [word, info] of Object.entries(tips)) {
                 if (textChunk.includes(word) && !textChunk.includes("<tip")) {
@@ -334,16 +350,29 @@ function renderLine() {
         speakerName.className = '';
     }
     
+    let waitMs = 0;
     if (lineData.command) {
-        executeCommand(lineData.command, lineData.args);
+        waitMs = executeCommand(lineData.command, lineData.args) || 0;
     }
     
     if (!lineData.text) {
         isTyping = false;
-        if (isAutoMode) {
-            autoAdvanceTimeout = setTimeout(() => handleAdvance(), 100);
+        if (waitMs > 0) {
+            interactionArea.style.pointerEvents = 'none';
+            autoAdvanceTimeout = setTimeout(() => {
+                interactionArea.style.pointerEvents = 'auto';
+                if (isAutoMode) {
+                    autoAdvanceTimeout = setTimeout(() => handleAdvance(), 500);
+                } else {
+                    handleAdvance(null);
+                }
+            }, waitMs);
         } else {
-            handleAdvance();
+            if (isAutoMode) {
+                autoAdvanceTimeout = setTimeout(() => handleAdvance(), 100);
+            } else {
+                handleAdvance();
+            }
         }
         return;
     }
@@ -422,24 +451,38 @@ function executeCommand(command, args) {
         case 'monochrome':
             if (args === 'on') document.body.classList.add('state-monochrome');
             else document.body.classList.remove('state-monochrome');
-            break;
+            return 0;
+        case 'scene_break':
+            const sbEl = document.createElement('div');
+            sbEl.className = 'effect-scene-break';
+            effectLayer.appendChild(sbEl);
+            setTimeout(() => sbEl.remove(), 1500);
+            return 1500;
+        case 'title_card':
+            const tcEl = document.createElement('div');
+            tcEl.className = 'effect-title-card';
+            tcEl.textContent = args;
+            effectLayer.appendChild(tcEl);
+            setTimeout(() => tcEl.remove(), 3500);
+            return 3500;
         case 'flood_emotions':
             const defaultEmotions = ['怖い', '失敗', 'ムカつく', '言い訳', 'どうせ俺には', '才能がない'];
             triggerFloodEmotions(Array.isArray(args) ? args : defaultEmotions);
-            break;
+            return 0;
         case 'shake':
             const gameContainer = document.getElementById('game-container');
             gameContainer.classList.remove('effect-shake');
             void gameContainer.offsetWidth; // trigger reflow
             gameContainer.classList.add('effect-shake');
-            break;
+            return 0;
         case 'flash':
             const flashEl = document.createElement('div');
             flashEl.className = 'effect-flash';
             effectLayer.appendChild(flashEl);
             setTimeout(() => flashEl.remove(), 600);
-            break;
+            return 600;
     }
+    return 0;
 }
 
 function triggerFloodEmotions(words) {

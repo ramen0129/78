@@ -180,6 +180,50 @@ body.state-monochrome #bg-layer {
 }
 @keyframes blink { 0% { opacity: 1; transform: translateY(0); } 50% { opacity: 0.2; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
 
+/* === Markdown & Notebook Styles === */
+.markdown-bold {
+    font-weight: bold;
+    color: #ffcc66; /* Note-like highlight color */
+    padding: 0 2px;
+}
+.markdown-bullet {
+    color: #44aaff;
+    font-weight: bold;
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+/* === Scene Transitions === */
+.effect-scene-break {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 500;
+    pointer-events: none;
+    animation: fadeInOutShort 1.5s ease-in-out forwards;
+}
+
+.effect-title-card {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 10, 15, 0.95); color: #fff; z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-family: "Noto Serif JP", serif;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    animation: fadeInOutLong 3.5s ease-in-out forwards;
+    padding: 20px; text-align: center; box-sizing: border-box;
+    pointer-events: auto; /* Block clicks while showing */
+}
+
+@keyframes fadeInOutShort {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes fadeInOutLong {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
 @media (max-width: 600px) {
     #menu-screen h1 { font-size: 1.8rem; }
     #text-box { font-size: 1.1rem; line-height: 1.6; }
