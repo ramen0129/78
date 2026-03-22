@@ -178,13 +178,95 @@ function rewindTo(index) {
     }
 }
 
-function startGame(chapterId) {
-    if (!scenarios[chapterId]) {
-        alert("This chapter scenario data is not loaded yet!");
+function parseMarkdownToScenario(text) {
+    const tips = {
+        "分母ゼロの檻": "失敗を恐れて行动（挑戦）しないため、結果的に成功する確率が永遠にゼロのまま停滞してしまう心理的障壁のこと。",
+        "素直さ（コーチャビリティ）": "ビジネスやスポーツにおいて「指導を素直に受け入れ、改善に繋げる能力」のこと。",
+        "素直さ": "ビジネスやスポーツにおいて「指導を素直に受け入れ、改善に繋げる能力」のこと。",
+        "事実と感情の切り離し": "メタ認知の一種。ここではノートに事実と感情を書き分けることで思考を可視化している。",
+        "メタ認知": "自分自身の感情や思考を客観的（第三者視点）に観察し、冷静にコントロールする能力。",
+        "WhoとWhatの分離": "相手の言葉のうち、感情的な『誰が言ったか』『どう言ったか』（Who）でなく、客観的な『指摘の事実内容』（What）のみを論理的に抽出すること。",
+        "忌避コスト": "失敗やプライドが傷つくことを恐れて行動を避ける心理的コスト。",
+        "観の目": "物事の表面的な動きにとらわれず、本質や全体像を俯瞰して観察する視座。",
+        "守破離": "日本の武道や芸道の修行プロセス。「守」は基本の型を忠実に守り、「破」は教えを応用・発展させ、「離」は独自の新しいスタイルを確立する。",
+        "一拍子": "思考と動作を分離させず、迷いなく対象に向かって最短最速で行動を起こすこと。",
+        "形無し": "基本の「型」を習得していない者が、無理に個性を出そうとして失敗すること。",
+        "自己流への執着": "人間の能力は生まれつき決まっており努力しても変わらないという思考の癖（固定マインドセット）。",
+        "心理的安全性": "チーム内で自分の意見を言ったり失敗したりしても、罰せられたり見下されたりしないという安心感。",
+        "自己開示": "自分のプライベートな情報や、弱さや失敗談などをありのままに他者に伝えること。",
+        "過剰適応": "他者の期待や指示に応えようとするあまり、自分自身の感情や特性を押し殺してしまう状態。",
+        "俯瞰": "自分自身や現在の状況を、まるで空から鳥が地上を見るように高い視点から客観的に把握すること。",
+        "パーパス": "自分は何のためにそれをするのか、という根本的な「存在意義」や「目的」。",
+        "空（くう）": "一切の執着や先入観を手放し、心が澄み切った状態。",
+        "空なり": "一切の執着や先入観を手放し、心が澄み切った状態。"
+    };
+
+    const out = [];
+    const lines = text.split('\n');
+
+    lines.forEach(line => {
+        line = line.trim();
+        if(!line || line.startsWith('---') || line.startsWith('## ') || line.startsWith('# ') || line === '＜完＞' || line === '＜本当の完＞') return;
+
+        let speaker = "";
+        let command = "";
+        let args = "";
+
+        if(line.startsWith("「") || line.startsWith("『")) {
+             const shota_phrases = ["体格が違うんだから", "どうせ俺には", "だ、誰だよ、あんた", "なんだよ！ 俺だって", "え……？", "素直さ……？", "俺だって一生懸命", "なら、俺はどうすれば", "なんで幽霊が", "大丈夫だ。素直に", "はい、でも……左足は", "わかってるよ……！ でも", "Whoと、What", "はい！ 左足の引きつけ", "一回『ありがとうございます』", "武蔵……。俺、今日は", "やっぱり、元の打ち方に", "武蔵……。なぁ、", "あんたと初めて会った", "……俺の分際。", "……まずは、型を信じて", "他人のやり方を素直に", "俺は間違ってない！", "あいつから学べって", "……健太", "さっきの小手……すげえ速かった", "自分の正しさを押し付ける", "俺は間違ったことは言ってません", "水は方円の器", "……ごめん、今の言い方は", "実はさ……俺も", "だから、陸が不安になる", "ああ。アドバイスされたら", "武蔵……今日初めて", "ありがとうございます。……俺", "……ある時、気づいた", "はい。言い訳して", "最初は全然", "先生……", "はい！ ありがとうございます！", "ありがとうございます！ やってみます！", "でも、恩人である先輩の", "俯瞰……", "行きます！", "武蔵……！ でも", "執着を……手放す", "武蔵……。俺、やっと分かったよ", "素直になるって、誰かに従うため", "武蔵！ ……あんたのおかげ", "……うそだろ", "……武蔵！", "最後の大会で", "……事実と、感情の切り離し", "そうだ……。一回で正解", "武蔵！ ……ありがとう"];
+            if(shota_phrases.some(p => line.includes(p))) speaker = "翔太";
+            else if(line.includes("翔太！ 動きが止まってるぞ") || line.includes("翔太！ 左足の") || line.includes("翔太、どうした") || line.includes("……なるほど、その体格なら") || line.includes("翔太、面を打つ時は")) speaker = "高橋先輩";
+            else if(line.includes("いいよ！ あのね")) speaker = "健太";
+            else if(line.includes("はい、でも……体力がない") || line.includes("翔太先輩……？") || line.includes("魔法の言葉……？") || (line.includes("……はい！ ありがとうございます") && !line.includes("陸"))) speaker = "陸";
+            else if(line.includes("翔太、ちょっといいか") || line.includes("最近のお前、本当に") || line.includes("俺もずっと気になってたんだ") || line.includes("分母ゼロの檻？") || line.includes("事実と感情の切り離しか") || line.includes("なるほどな……") || line.includes("そうやって自分を変えてきた") || line.includes("これからは、お前たちが")) speaker = "佐藤先生";
+            else if(line.includes("始めっ！")) speaker = "";
+            else if(line.endsWith("じゃ」") || line.endsWith("るな」") || line.endsWith("せよ」") || line.includes("おらぬ") || line.includes("おのれが分際") || line.includes("小僧") || line.includes("いかにも") || line.includes("わしは") || line.includes("安心せい") || line.includes("馬鹿者！") || line.includes("なんじゃ") || line.includes("その通りじゃ")) speaker = "武蔵";
+        }
+
+        if (line.includes("モノクローム") || line.includes("色が消え") || line.includes("色が失い")) { command = "monochrome"; args = "on"; }
+        else if(line.includes("色が戻り") || line.includes("色が戻った") || line.includes("時間が動き出した")) { command = "monochrome"; args = "off"; }
+        else if(line.includes("パーァァ") || line.includes("パーンッ")) { command = "flash"; }
+        else if(line.includes("眼光") || line.includes("怒声") || line.includes("空間がビリビリと")) { command = "shake"; }
+
+        let chunks = line.split('。');
+        chunks.forEach((chunk, index) => {
+            let textChunk = chunk.trim();
+            if (!textChunk) return;
+            if (index < chunks.length - 1 || line.endsWith('。')) {
+                textChunk += '。';
+            }
+            // Apply tips safely per sentence chunk
+            for (const [word, info] of Object.entries(tips)) {
+                if (textChunk.includes(word) && !textChunk.includes("<tip")) {
+                    textChunk = textChunk.replace(word, `<tip info="${info}">${word}</tip>`);
+                }
+            }
+            out.push({
+                speaker: speaker,
+                text: textChunk,
+                command: index === 0 ? command : "",
+                args: index === 0 ? args : ""
+            });
+        });
+    });
+    return out;
+}
+
+async function startGame(chapterId) {
+    currentChapterId = chapterId;
+    
+    try {
+        let mdFile = chapterId.replace('_', '.') + '.md';
+        let titleCase = mdFile.charAt(0).toUpperCase() + mdFile.slice(1);
+        const res = await fetch('../ultimate/' + titleCase);
+        if (!res.ok) throw new Error('Markdown load failed');
+        const text = await res.text();
+        gameScenario = parseMarkdownToScenario(text);
+    } catch (e) {
+        console.error(e);
+        alert("Failed to load scenario data for " + chapterId);
         return;
     }
-    currentChapterId = chapterId;
-    gameScenario = scenarios[chapterId];
     
     menuScreen.style.display = 'none';
     gameScreen.style.display = 'block';
@@ -278,7 +360,7 @@ function typeWriterHTML(htmlStr) {
     function traverse(node) {
         if (node.nodeType === 3) {
             const text = node.textContent;
-            for(let i=0; i<text.length; i++) chars.push({ parent: node.parentNode, char: text[i] });
+            for(let i=0; i<text.length; i++) chars.push({ textNode: node, char: text[i] });
             node.textContent = '';
         } else {
             for (let child of node.childNodes) traverse(child);
@@ -291,7 +373,7 @@ function typeWriterHTML(htmlStr) {
     let i = 0;
     currentTextInterval = setInterval(() => {
         if (i < chars.length) {
-            chars[i].parent.textContent += chars[i].char;
+            chars[i].textNode.textContent += chars[i].char;
             i++;
         } else {
             clearInterval(currentTextInterval);
