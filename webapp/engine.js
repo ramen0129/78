@@ -426,38 +426,19 @@ function renderLine() {
 }
 
 function typeWriterHTML(htmlStr) {
+    // TEMPORARY: Bypass typewriter to verify ruby rendering
+    textBox.innerHTML = '';
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlStr;
-    let chars = [];
-    
-    function traverse(node) {
-        if (node.nodeType === 3) {
-            const text = node.textContent;
-            for(let i=0; i<text.length; i++) chars.push({ textNode: node, char: text[i] });
-            node.textContent = '';
-        } else {
-            for (let child of node.childNodes) traverse(child);
-        }
-    }
-    traverse(tempDiv);
-    
     textBox.appendChild(tempDiv);
     
-    let i = 0;
-    currentTextInterval = setInterval(() => {
-        if (i < chars.length) {
-            chars[i].textNode.textContent += chars[i].char;
-            i++;
-        } else {
-            clearInterval(currentTextInterval);
-            isTyping = false;
-            clickIndicator.style.display = 'block';
-            bindTooltips();
-            if (isAutoMode) {
-                autoAdvanceTimeout = setTimeout(() => handleAdvance(), 1500);
-            }
-        }
-    }, 40); 
+    clearInterval(currentTextInterval);
+    isTyping = false;
+    clickIndicator.style.display = 'block';
+    bindTooltips();
+    if (isAutoMode) {
+        autoAdvanceTimeout = setTimeout(() => handleAdvance(), 1500);
+    }
 }
 
 function parseInlineCommands(text) {
