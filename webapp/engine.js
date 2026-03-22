@@ -461,9 +461,8 @@ function typeWriterHTML(htmlStr) {
 }
 
 function parseInlineCommands(text) {
-    // Furigana Support: Kanji(Furigana) -> <ruby>Kanji<rt>Furigana</rt></ruby>
-    // Supports both half-width () and full-width （） parentheses.
-    let parsed = text.replace(/([\u4E00-\u9FFF\u3005\u3006\u3007]+)[\(（]([^)）]+)[\)）]/g, '<ruby>$1<rt>$2</rt></ruby>');
+    // Furigana Support: Simple half-width Kanji(Furigana) notation
+    let parsed = text.replace(/([一-龠々ヶ]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
     
     parsed = parsed.replace(/<red>(.*?)<\/red>/g, '<span class="highlight-red">$1</span>');
     parsed = parsed.replace(/<blue>(.*?)<\/blue>/g, '<span class="highlight-blue">$1</span>');
