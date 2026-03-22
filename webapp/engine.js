@@ -138,7 +138,7 @@ function showBacklog() {
         item.title = "クリックでこのシーンまで巻き戻る";
         
         let speakerHTML = '';
-        if (lineData.speaker) {
+        if (lineData.speaker && lineData.speaker !== '語り手') {
             let spClass = lineData.speaker === '高橋先輩' || lineData.speaker === '佐藤先生' ? 'sub-character' : lineData.speaker;
             speakerHTML = `<div class="backlog-speaker ${spClass}">${lineData.speaker}</div>`;
         }
@@ -364,7 +364,7 @@ function renderLine() {
     
     const lineData = gameScenario[currentIndex];
     
-    if (lineData.speaker) {
+    if (lineData.speaker && lineData.speaker !== '語り手') {
         speakerName.textContent = lineData.speaker;
         speakerName.className = lineData.speaker === '高橋先輩' || lineData.speaker === '佐藤先生' ? 'sub-character' : lineData.speaker;
     } else {
