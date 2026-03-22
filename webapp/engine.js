@@ -31,12 +31,6 @@ const backlogContent = document.getElementById('backlog-content');
 const backlogCloseBtn = document.getElementById('backlog-close-btn');
 
 function initSystem() {
-    // Temporary version check
-    const vTag = document.createElement('div');
-    vTag.style = "position:fixed;bottom:2px;left:2px;font-size:10px;color:#444;z-index:9999;";
-    vTag.textContent = "v10-BypassTest";
-    document.body.appendChild(vTag);
-
     refreshMenuUI();
     
     // Bind Title Buttons
@@ -432,19 +426,38 @@ function renderLine() {
 }
 
 function typeWriterHTML(htmlStr) {
-    // TEMPORARY: Bypass typewriter to verify ruby rendering
-    textBox.innerHTML = '';
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlStr;
+    let chars = [];
+    
+    function traverse(node) {
+        if (node.nodeType === 3) {
+            const text = node.textContent;
+            for(let i=0; i<text.length; i++) chars.push({ textNode: node, char: text[i] });
+            node.textContent = '';
+        } else {
+            for (let child of node.childNodes) traverse(child);
+        }
+    }
+    traverse(tempDiv);
+    
     textBox.appendChild(tempDiv);
     
-    clearInterval(currentTextInterval);
-    isTyping = false;
-    clickIndicator.style.display = 'block';
-    bindTooltips();
-    if (isAutoMode) {
-        autoAdvanceTimeout = setTimeout(() => handleAdvance(), 1500);
-    }
+    let i = 0;
+    currentTextInterval = setInterval(() => {
+        if (i < chars.length) {
+            chars[i].textNode.textContent += chars[i].char;
+            i++;
+        } else {
+            clearInterval(currentTextInterval);
+            isTyping = false;
+            clickIndicator.style.display = 'block';
+            bindTooltips();
+            if (isAutoMode) {
+                autoAdvanceTimeout = setTimeout(() => handleAdvance(), 1500);
+            }
+        }
+    }, 40); 
 }
 
 function parseInlineCommands(text) {

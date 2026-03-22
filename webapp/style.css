@@ -116,12 +116,11 @@ ruby {
     display: inline-ruby;
 }
 rt {
-    font-size: 0.65em;
-    font-weight: bold;
-    color: #ff3333; /* Vivid red for verification */
+    font-size: 0.55em;
+    font-weight: normal;
+    color: rgba(255, 235, 153, 0.95); /* Elegant gold for readability */
     letter-spacing: normal;
-    padding-bottom: 4px;
-    background: transparent;
+    padding-bottom: 2px;
 }
 #return-menu-btn {
     position: absolute; top: 15px; right: 20px; color: #bbb; border: 1px solid #555; background: rgba(0,0,0,0.5);
