@@ -31,6 +31,12 @@ const backlogContent = document.getElementById('backlog-content');
 const backlogCloseBtn = document.getElementById('backlog-close-btn');
 
 function initSystem() {
+    // Temporary version check
+    const vTag = document.createElement('div');
+    vTag.style = "position:fixed;bottom:2px;left:2px;font-size:10px;color:#444;z-index:9999;";
+    vTag.textContent = "v10-BypassTest";
+    document.body.appendChild(vTag);
+
     refreshMenuUI();
     
     // Bind Title Buttons
