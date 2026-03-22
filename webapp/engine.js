@@ -202,6 +202,7 @@ function parseMarkdownToScenario(text) {
     };
 
     let currentBgClass = "bg-evening"; // Default starting bg for chapters
+    let isInnerWorld = false; // State management for Musashi's world
     const out = [{ command: "change_bg", args: currentBgClass }];
     const lines = text.split('\n');
 
@@ -209,14 +210,32 @@ function parseMarkdownToScenario(text) {
         line = line.trim();
         if(!line || line.startsWith('# ') || line === '＜完＞' || line === '＜本当の完＞') return;
 
-        let newBg = currentBgClass;
-        if (line.includes("夜") || line.includes("自室") || line.startsWith("## 補講") || line.includes("深夜")) {
-            newBg = "bg-night";
+        // 1. Identify valid background types based on world keywords
+        let baseBg = currentBgClass;
+        if (line.includes("稽古") || line.includes("道場") || line.includes("体育館")) {
+            baseBg = "bg-dojo";
+        } else if (line.includes("夜") || line.includes("自室") || line.startsWith("## 補講") || line.includes("深夜")) {
+            baseBg = "bg-night";
         } else if (line.includes("教室") || line.includes("学校") || line.includes("朝") || line.includes("昼")) {
-            newBg = "bg-day";
-        } else if (line.includes("道場") || line.includes("部室") || line.includes("体育館") || line.includes("放課後") || line.includes("夕")) {
-            newBg = "bg-evening";
+            baseBg = "bg-day";
+        } else if (line.includes("放課後") || line.includes("夕")) {
+            baseBg = "bg-evening";
         }
+
+        // 2. Identify transitions between normal world and inner world
+        if (line.includes("モノクローム") || line.includes("色が消え") || line.includes("色が失い") || line.includes("精神世界") || line.includes("内面")) {
+            isInnerWorld = true;
+        } else if (line.includes("色が戻") || line.includes("時間が動き出した") || line.includes("日常の色彩")) {
+            isInnerWorld = false;
+        }
+
+        // 3. Follow-up: Musashi's presence implies inner world
+        if (line.startsWith("武蔵「") || line.startsWith("武蔵『")) {
+            isInnerWorld = true;
+        }
+
+        // Final background determination
+        let newBg = isInnerWorld ? "bg-inner-world" : baseBg;
 
         if (newBg !== currentBgClass) {
             currentBgClass = newBg;
@@ -254,8 +273,11 @@ function parseMarkdownToScenario(text) {
             speaker = ""; // Unnamed dialogue
         }
 
-        if (line.includes("モノクローム") || line.includes("色が消え") || line.includes("色が失い")) { command = "monochrome"; args = "on"; }
-        else if(line.includes("色が戻り") || line.includes("色が戻った") || line.includes("時間が動き出した")) { command = "monochrome"; args = "off"; }
+        if (line.includes("モノクローム") || line.includes("色が消え") || line.includes("色が失い") || isInnerWorld) { command = "monochrome"; args = (isInnerWorld || line.includes("内面")) ? "on" : "on"; }
+        if (line.includes("色が戻り") || line.includes("色が戻った") || line.includes("時間が動き出した") || !isInnerWorld) { 
+            // Only turn off monochrome if we are explicitly not in inner world
+            if (!isInnerWorld) { command = "monochrome"; args = "off"; }
+        }
         else if(line.includes("パーァァ") || line.includes("パーンッ")) { command = "flash"; }
         else if(line.includes("眼光") || line.includes("怒声") || line.includes("空間がビリビリと")) { command = "shake"; }
 
