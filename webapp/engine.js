@@ -461,7 +461,11 @@ function typeWriterHTML(htmlStr) {
 }
 
 function parseInlineCommands(text) {
-    let parsed = text.replace(/<red>(.*?)<\/red>/g, '<span class="highlight-red">$1</span>');
+    // Furigana Support: Kanji(Furigana) -> <ruby>Kanji<rt>Furigana</rt></ruby>
+    // Matches one or more Kanji followed by text in parentheses.
+    let parsed = text.replace(/([一-龠々]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+    
+    parsed = parsed.replace(/<red>(.*?)<\/red>/g, '<span class="highlight-red">$1</span>');
     parsed = parsed.replace(/<blue>(.*?)<\/blue>/g, '<span class="highlight-blue">$1</span>');
     parsed = parsed.replace(/<gold>(.*?)<\/gold>/g, '<span style="color:#ffd700; text-shadow:0 0 10px #ffd700; font-weight:bold;">$1</span>');
     parsed = parsed.replace(/<silver>(.*?)<\/silver>/g, '<span style="color:#e0e0e0; text-shadow:0 0 10px #ffffff; font-weight:bold;">$1</span>');

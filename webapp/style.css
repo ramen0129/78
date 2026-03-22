@@ -235,3 +235,15 @@ body.state-monochrome #bg-layer {
     #text-box { font-size: 1.1rem; line-height: 1.6; }
     #dialogue-panel { height: 40%; margin: 10px; padding: 15px 20px; }
 }
+
+/* Ruby (Furigana) Styles */
+ruby {
+    ruby-position: over;
+    ruby-align: center;
+}
+rt {
+    font-size: 0.5em;
+    color: rgba(255, 235, 153, 0.85); /* Subtle goldish color for furigana */
+    letter-spacing: normal;
+    padding-bottom: 2px;
+}
