@@ -201,12 +201,27 @@ function parseMarkdownToScenario(text) {
         "空なり": "一切の執着や先入観を手放し、心が澄み切った状態。"
     };
 
-    const out = [];
+    let currentBgClass = "bg-evening"; // Default starting bg for chapters
+    const out = [{ command: "change_bg", args: currentBgClass }];
     const lines = text.split('\n');
 
     lines.forEach(line => {
         line = line.trim();
         if(!line || line.startsWith('# ') || line === '＜完＞' || line === '＜本当の完＞') return;
+
+        let newBg = currentBgClass;
+        if (line.includes("夜") || line.includes("自室") || line.startsWith("## 補講") || line.includes("深夜")) {
+            newBg = "bg-night";
+        } else if (line.includes("教室") || line.includes("学校") || line.includes("朝") || line.includes("昼")) {
+            newBg = "bg-day";
+        } else if (line.includes("道場") || line.includes("部室") || line.includes("体育館") || line.includes("放課後") || line.includes("夕")) {
+            newBg = "bg-evening";
+        }
+
+        if (newBg !== currentBgClass) {
+            currentBgClass = newBg;
+            out.push({ command: "change_bg", args: currentBgClass });
+        }
 
         if (line.startsWith('---')) {
             out.push({ command: "scene_break" });
@@ -448,6 +463,13 @@ function bindTooltips() {
 
 function executeCommand(command, args) {
     switch(command) {
+        case 'change_bg':
+            const bgLayer = document.getElementById('bg-layer');
+            if (bgLayer) {
+                bgLayer.className = '';
+                if (args) bgLayer.classList.add(args);
+            }
+            return 0;
         case 'monochrome':
             if (args === 'on') document.body.classList.add('state-monochrome');
             else document.body.classList.remove('state-monochrome');

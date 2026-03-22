@@ -53,11 +53,15 @@ body {
     position: absolute; top: -5%; left: -5%; width: 110%; height: 110%;
     background: linear-gradient(135deg, #1a2a3a 0%, #0d1217 100%);
     background-size: cover; background-position: center;
-    transition: filter 0.8s ease-in-out, opacity 0.8s ease; z-index: 1;
+    transition: filter 2s ease-in-out, opacity 0.8s ease; z-index: 1;
 }
 
+#bg-layer.bg-day { filter: brightness(1.8) sepia(0.2) hue-rotate(-10deg); }
+#bg-layer.bg-evening { filter: brightness(1.0); }
+#bg-layer.bg-night { filter: brightness(0.3) saturate(0.8) hue-rotate(15deg); }
+
 body.state-monochrome #bg-layer {
-    filter: grayscale(100%) brightness(0.5) contrast(1.5);
+    filter: grayscale(100%) brightness(0.5) contrast(1.5) !important;
 }
 
 #effect-layer {
